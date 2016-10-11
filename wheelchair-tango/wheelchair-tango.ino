@@ -11,7 +11,7 @@ unsigned long lastAngleUpdate = 0; // the last time we updated the angle
 long frontDistance = 0;
 long backDistance = 0;
 float previousError = 0.0, integratedError = 0.0, correction = 0.0, previousControlledAngle = 0.0;
-float angleSetPoint = 0.0; //current error in angle
+int angleSetPoint = 0; //current error in angle
 /* PID values for ANGLE */
 float angleP = 0.5;
 float angleI = 0.0;
@@ -22,8 +22,9 @@ float speedI = 0.0;
 float speedD = 0.0;
 
 void setup() {
-  Serial.begin(9600);
-  Serial.setTimeout(200);
+  Serial.begin(9600); //for debug
+  Serial1.begin(9600);
+  Serial1.setTimeout(200);
   encoderRight.attach(2, 12, HIGH); // Pulse pin, direction pin, the state of the direction pin when going forward
   encoderLeft.attach(3, 13, LOW);
   wheelchair.begin(encoderLeft, encoderRight);
@@ -32,9 +33,9 @@ void setup() {
 
 void loop() {
   wheelchair.updateMotors();
- // updateAngle();
-  // getSerialInput();
-  handleInput();
+  updateAngle(); //PID controller for the angle
+  getTangoInput(); // input from the bluetooth module
+  handleInput(); // debug input from serial
 }
 
 void handleInput() { //handle serial input if there is any
@@ -53,14 +54,17 @@ void handleInput() { //handle serial input if there is any
   }
 }
 
-void getSerialInput() {
-  if (Serial.available()) {
-    String input = Serial.readStringUntil('*');
-    if (input.startsWith("a")) { //angle
-      angleSetPoint = input.substring(1).toFloat();
-    } else if (input.startsWith("s")) { //speed
+void getTangoInput() {
+  if (Serial1.available()) {
+    String input = Serial1.readStringUntil('*');
+    Serial.print(input);
+    if (input.startsWith("t")) { //angle
+      angleSetPoint = input.substring(1).toInt();
+      Serial.println();
+    } else if (input.startsWith("m")) { //speed
       float throttle = input.substring(1).toFloat();
       wheelchair.setSpeed(throttle);
+      Serial.print("\t");
     }
   }
 }
@@ -68,7 +72,7 @@ void getSerialInput() {
 void updateAngle() {
   unsigned long currentTime = millis();
   if (currentTime >= lastAngleUpdate + PID_FREQUENCY) {
-    float controlledAngle = anglePIDcontrol(previousControlledAngle, angleSetPoint);
+    float controlledAngle = anglePIDcontrol(previousControlledAngle, (float) angleSetPoint);
     wheelchair.setAngle(lroundf(controlledAngle));
     previousControlledAngle = controlledAngle;
     lastAngleUpdate = currentTime;
