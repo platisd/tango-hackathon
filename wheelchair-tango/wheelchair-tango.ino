@@ -1,8 +1,8 @@
 #include <Smartcar.h>
 
 Odometer encoderLeft(570), encoderRight(570);
-const unsigned short LEFT_MOTOR[] = {8, 9, 6};
-const unsigned short RIGHT_MOTOR[] = {11, 10, 5};
+unsigned short LEFT_MOTOR[] = {8, 9, 6};
+unsigned short RIGHT_MOTOR[] = {11, 10, 5};
 
 Car wheelchair(useShieldMotors(LEFT_MOTOR, RIGHT_MOTOR));
 
@@ -13,7 +13,7 @@ long backDistance = 0;
 float previousError = 0.0, integratedError = 0.0, correction = 0.0, previousControlledAngle = 0.0;
 int angleSetPoint = 0; //current error in angle
 /* PID values for ANGLE */
-float angleP = 0.5;
+float angleP = 0.01;
 float angleI = 0.0;
 float angleD = 0.0;
 /* PID values for SPEED */

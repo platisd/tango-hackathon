@@ -26,7 +26,7 @@ enum DemoState {
 
 DemoState currentState = firstStraight;
 unsigned long startedTurning = 0; //the moment when we start turning right
-const unsigned long TURNING_DISTANCE = 150; //distance in cm on how much the left wheel should turn
+const unsigned long TURNING_DISTANCE = 130; //distance in cm on how much the left wheel should turn
 unsigned long startingDistance = 0;
 
 void setup() {
