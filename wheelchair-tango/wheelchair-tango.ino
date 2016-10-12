@@ -13,9 +13,9 @@ long backDistance = 0;
 float previousError = 0.0, integratedError = 0.0, correction = 0.0, previousControlledAngle = 0.0;
 int angleSetPoint = 0; //current error in angle
 /* PID values for ANGLE */
-float angleP = 0.01;
+float angleP = 6.0;
 float angleI = 0.0;
-float angleD = 0.0;
+float angleD = 20.0;
 /* PID values for SPEED */
 float speedP = 1.2;
 float speedI = 0.0;
@@ -59,7 +59,7 @@ void getTangoInput() {
     String input = Serial1.readStringUntil('*');
     Serial.print(input);
     if (input.startsWith("t")) { //angle
-      angleSetPoint = input.substring(1).toInt();
+      angleSetPoint = - input.substring(1).toInt();
       Serial.println();
     } else if (input.startsWith("m")) { //speed
       float throttle = input.substring(1).toFloat();
